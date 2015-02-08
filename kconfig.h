@@ -9,10 +9,13 @@
 #ifndef utos_kconfig_h
 #define utos_kconfig_h
 
-#define PROCESS_COUNT 2
+#define PROCESS_COUNT 3
+#define PROCESS_STACK_SIZE 100
 
-
+// the length of a tick in milliseconds
+#define SYSTEM_TICK 1
 #define F_CPU 16000000ul
-#define SYSTEM_TICK 10 // milliseconds
+
+#define NUM_INSTRUCTION F_CPU*SYSTEM_TICK/1000
 
 #endif

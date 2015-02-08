@@ -129,16 +129,18 @@ ISR(TIMER1_COMPA_vect, ISR_NAKED)
     asm volatile ( "reti" );
 }
 
-void port_setup_timer(void) {
+void port_start_timer(void) {
+    cli();
+    // Timer in CTC mode WGM12
+    // Prescalar of 64 (1 << CS11)|(1 << CS10)
+    
     TCCR1B |= (1 << WGM12)|(1 << CS11)|(1 << CS10);
     TCNT1 = 0;
     TIMSK |= (1 << OCIE1A);
     
     // initialize compare value
-    OCR1A = 255;
-}
-
-void port_start_timer(void) {
+    OCR1A = NUM_INSTRUCTION / 64;
+    
     sei();
 }
 
