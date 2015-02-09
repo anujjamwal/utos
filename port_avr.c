@@ -7,6 +7,7 @@
 //
 
 #include <avr/interrupt.h>
+#include "port.h"
 #include "kernel.h"
 
 #define SAVE_CONTEXT() \
@@ -103,7 +104,7 @@ void port_kernel_tick(void) __attribute__ ((naked));
 void port_kernel_tick(void) {
     SAVE_CONTEXT();
     
-    kernel_run_schedular();
+    kernel_run_scheduler();
     
     RESTORE_CONTEXT();
     
@@ -114,9 +115,10 @@ void kernel_yield(void) __attribute__((naked));
 void kernel_yield(void) {
     SAVE_CONTEXT();
     
-    kernel_run_schedular();
+    kernel_run_scheduler();
     
     RESTORE_CONTEXT();
+    sei();
     
     asm volatile ( "ret" );
 }
@@ -189,4 +191,14 @@ void port_init_context(pCtrlBlock * pcb) {
     stackbase[--stacksize] = (pStack) 30; /* R30 Z */
     stackbase[--stacksize] = (pStack) 31; /* R31 */
     pcb->topOfStack = &stackbase[--stacksize];
+}
+void port_sei(void) __attribute__((naked));
+void port_sei(void) {
+    sei();
+    asm volatile ( "ret" );
+}
+void port_cli(void) __attribute__((naked));
+void port_cli(void) {
+    cli();
+    asm volatile ( "ret" );
 }

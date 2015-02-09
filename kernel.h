@@ -10,27 +10,17 @@
 #define __utos__kernel__
 
 #include "kconfig.h"
-
-typedef enum {Running, Waiting} pStatus;
-
-typedef unsigned char pStack;
-
-typedef void (*pCode) (void);
-
-typedef struct {
-    volatile pStack * topOfStack;
-    pStack stack[PROCESS_STACK_SIZE];
-    pCode code;
-    
-    unsigned int waitTicks;
-    volatile pStatus status;
-    volatile unsigned int elapsedTicks;
-} pCtrlBlock;
+#include "kerndefs.h"
 
 void kernel_init(void);
 void kernel_start(void);
-void kernel_spawn(pCode code, unsigned int time);
-void kernel_run_schedular(void);
+pid kernel_spawn(pCode code, unsigned int time);
+void kernel_run_scheduler(void);
 void kernel_yield(void);
+
+#ifdef USE_MAILBOX
+void kernel_send(pid process, unsigned char * message, unsigned char length);
+ipcMessage * kernel_receive(void);
+#endif
 
 #endif /* defined(__utos__kernel__) */

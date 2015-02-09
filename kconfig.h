@@ -9,8 +9,16 @@
 #ifndef utos_kconfig_h
 #define utos_kconfig_h
 
-#define PROCESS_COUNT 3
+#define PROCESS_COUNT 2
 #define PROCESS_STACK_SIZE 100
+
+/*
+ * Every message has a mailbox used to receive messages from other processes.
+ * Kernel as of now supports fixed size messages and a fixed lenght mailbox.
+ */
+#define USE_MAILBOX 1
+#define MESSAGE_SIZE 10
+#define MAILBOX_SIZE 5
 
 // the length of a tick in milliseconds
 #define SYSTEM_TICK 1
