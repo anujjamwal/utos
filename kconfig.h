@@ -9,6 +9,9 @@
 #ifndef utos_kconfig_h
 #define utos_kconfig_h
 
+/*
+ * The count of user processes to be executed
+ */
 #define PROCESS_COUNT 2
 #define PROCESS_STACK_SIZE 100
 
