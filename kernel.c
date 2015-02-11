@@ -10,27 +10,30 @@
 #include "kconfig.h"
 #include "port.h"
 #include "ipc.h"
+#include "process.h"
 
 
 pCtrlBlock processes[PROCESS_COUNT+1];
 volatile pCtrlBlock * volatile context;
 volatile pid pInd = 0;
+unsigned char pCount = 0;
 
 void _kernel_housekeeping(void);
 void _kernel_init_pcb(pCode code, pCtrlBlock *pcb, unsigned int time);
-pCtrlBlock * _kernel_process_with_max_priority(pCtrlBlock * process, pCtrlBlock * lastProcess);
+pCtrlBlock * kernel_next_process(pCtrlBlock * process) ;
 
 
 void kernel_init(void) {
-    kernel_spawn(_kernel_housekeeping);
+    kernel_spawn(_kernel_housekeeping, VLow);
 }
 
 void kernel_start(void) {
     port_start_timer();
 }
 
-pid kernel_spawn(pCode code) {
+pid kernel_spawn(pCode code, pPriority priority) {
     port_cli();
+    pCount++;
     
     pCtrlBlock * pcb = &processes[pInd++];
     
@@ -38,7 +41,8 @@ pid kernel_spawn(pCode code) {
     pcb->code = code;
     // pcb->waitTicks = time % SYSTEM_TICK > 0 ? time / SYSTEM_TICK + 1 : time / SYSTEM_TICK;
     pcb->elapsedTicks = 0;
-    pcb->status = Waiting;
+    pcb->status = Ready;
+    pcb->priority = priority;
     
     port_init_context(pcb);
     port_sei();
@@ -47,39 +51,38 @@ pid kernel_spawn(pCode code) {
 
 void kernel_run_scheduler(void) {
     
-    static unsigned char i;
-    static pCtrlBlock * tmp, *candidate;
+    unsigned char i;
     
-    candidate = 0;
+    for(i = 1; i < pCount; i++) {
+        process_run_state_machine(&processes[i]);
+    }
     
-    for(i = 1; i < PROCESS_COUNT+1; i++) {
-        tmp = &processes[i];
-        
-        if (tmp->status == Sleeping) {
-            tmp->waitTicks--;
-            
-            if (tmp->waitTicks == 0) {
-                tmp->status = Waiting;
+    context = kernel_next_process(processes);
+    process_change_status((pCtrlBlock*)context, Running);
+}
+
+pCtrlBlock * kernel_next_process(pCtrlBlock * process) {
+    pCtrlBlock * p = 0, *t;
+    unsigned char i;
+    
+    for(i = 1; i < pCount; i++) {
+        t = &process[i];
+        if (t->status == Ready) {
+            if (p == 0) {
+                p = t;
+            } else if(p->priority < t->priority) {
+                p = t;
+            } else if(p->priority == t->priority && p->elapsedTicks < t->elapsedTicks) {
+                p = t;
             }
-        } else if (tmp->status == Running) {
-            tmp->status = Waiting;
-            tmp->elapsedTicks = 0;
-        } else if(tmp->status == Waiting) {
-            tmp->elapsedTicks++;
-            
-            if(tmp->elapsedTicks >= tmp->waitTicks)
-                candidate = _kernel_process_with_max_priority(tmp, candidate);
         }
     }
     
-    if(candidate == 0) candidate = &processes[0];
+    if (p == 0) {
+        p = &process[0];
+    }
     
-    context = candidate;
-    context->status = Running;
-}
-
-pCtrlBlock * _kernel_process_with_max_priority(pCtrlBlock * process, pCtrlBlock * lastProcess) {
-    return process;
+    return p;
 }
                                                
 void kernel_send(pid process, unsigned char * message, unsigned char length) {

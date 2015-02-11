@@ -46,11 +46,12 @@ void kernel_start(void);
  * The method should not be executed from user code
  *
  * Arguments:
- *   code: process function to be executed
+ *   code    : process function to be executed
+ *   priority: the process priority
  * Return Type:
  *   pid : returns the pid of the process
  */
-pid kernel_spawn(pCode code);
+pid kernel_spawn(pCode code, pPriority priority);
 
 
 /*

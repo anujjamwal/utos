@@ -6,9 +6,8 @@ The project also aims to provide well defined hardware and device abstractions t
 
 The RTOS aims to 
 * Preemptive Scheduling of process
-* Response time guarantee per task over fixed priority
 * Block Waiting of process for some hardware
-* Block Waiting for delays
+* Block Process for delays
 
 ## Example:
 Define the process count in kconfig.h as PROCESS_COUNT
@@ -20,13 +19,13 @@ Define the process count in kconfig.h as PROCESS_COUNT
 void process1(void) {
     while(1) {
         PORTB = 0xff;
-        kernel_yield();
+        kernel_sleep(1);
     }
 }
 void process2(void) {
     while(1) {
         PORTB = 0x00;
-        kernel_yield();
+        kernel_yield(1);
     }
 
 }
@@ -34,8 +33,8 @@ void process2(void) {
 void setup(void) {
     kernel_init();
     
-    kernel_spawn(process1);
-    kernel_spawn(process2);
+    kernel_spawn(process1, Med);
+    kernel_spawn(process2, Med);
     
     kernel_start();
 }
@@ -63,7 +62,7 @@ void process1(void) {
   while(1) {
     kernel_send(p2, (unsigned char *)m, 1);
     m[0] ++;
-    kernel_yield();
+    kernel_sleep(3);
   }
 }
 
@@ -80,8 +79,8 @@ void process2(void) {
 
 void setup(void) {
   kernel_init();
-  p1 = kernel_spawn(process1, 1);
-  p2 = kernel_spawn(process2, 1);
+  p1 = kernel_spawn(process1, Med);
+  p2 = kernel_spawn(process2, Med);
 	                    
   kernel_start();
 }

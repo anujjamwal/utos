@@ -9,7 +9,10 @@
 #ifndef utos_kerndefs_h
 #define utos_kerndefs_h
 
+#include "kconfig.h"
+
 typedef enum {Running, Waiting, Ready, Blocked, Sleeping} pStatus;
+typedef enum {VLow, Low, Med, High, VHigh} pPriority;
 
 typedef unsigned char pStack;
 typedef unsigned char pid;
@@ -39,6 +42,7 @@ typedef struct {
     pStack stack[PROCESS_STACK_SIZE];
     pCode code;
     
+    pPriority priority;
     
     unsigned int waitTicks;
     volatile pStatus status;
