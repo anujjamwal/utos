@@ -15,5 +15,7 @@
 void mailbox_init(mailbox * mail);
 void message_send(mailbox * tomail, pid fromPid, unsigned char * content, unsigned char length);
 ipcMessage * message_receive(mailbox * mail);
+unsigned char is_empty(mailbox * mail);
+unsigned char is_full(mailbox * mail);
 
 #endif

@@ -126,6 +126,9 @@ ipcMessage * kernel_receive(void);
  */
 void kernel_sleep(unsigned int time);
 
+void kernel_wait(pCtrlBlock * process, pWait reason);
+
+
 #endif
 
 #endif /* defined(__utos__kernel__) */

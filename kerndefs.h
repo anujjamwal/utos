@@ -13,6 +13,7 @@
 
 typedef enum {Running, Waiting, Ready, Blocked, Sleeping} pStatus;
 typedef enum {VLow, Low, Med, High, VHigh} pPriority;
+typedef enum {MsgReceive, MsgSend} pWait;
 
 typedef unsigned char pStack;
 typedef unsigned char pid;
@@ -27,11 +28,12 @@ typedef struct {
     unsigned char content[MESSAGE_SIZE];
 } ipcMessage;
 
-typedef struct {
+typedef struct mailbox_ {
     ipcMessage curr;
     ipcMessage box[MAILBOX_SIZE];
     volatile unsigned char head;
     volatile unsigned char tail;
+    struct mailbox_ * outMail;
 } mailbox;
 #endif
 
@@ -43,6 +45,7 @@ typedef struct {
     pCode code;
     
     pPriority priority;
+    pWait waitFor;
     
     unsigned int waitTicks;
     volatile pStatus status;

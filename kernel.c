@@ -99,6 +99,14 @@ void kernel_sleep(unsigned int time) {
     context->waitTicks = time / SYSTEM_TICK;
     kernel_yield();
 }
+
+
+void kernel_wait(pCtrlBlock * process, pWait reason) {
+    process->waitFor = reason;
+    process_change_status(process, Waiting);
+    kernel_yield();
+}
+
                                                
 void _kernel_housekeeping(void) {
     while (1) {

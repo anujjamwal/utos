@@ -18,18 +18,28 @@ void mailbox_init(mailbox * mail) {
     mail->tail = 0;
 }
 
+unsigned char is_empty(mailbox * mail) {
+    return mail->head == mail->tail;
+}
+
+unsigned char is_full(mailbox * mail) {
+    unsigned char next = (unsigned char)((mail->head + 1) % MAILBOX_SIZE);
+    return next == mail->tail;
+}
+
 void message_send(mailbox * tomail, pid fromPid, unsigned char * content, unsigned char length) {
     ipcMessage * msg;
     unsigned char next = (unsigned char)((tomail->head + 1) % MAILBOX_SIZE);
-
+    
     port_cli();
-
-    while(next == tomail->tail) {
+    context->mail.outMail = tomail;
+    
+    if (is_full(tomail)) {
         // mailbox is full. Block the process till mailbox has some space
-        kernel_yield();
+        kernel_wait((pCtrlBlock *)context, MsgSend);
     }
-    
-    
+    port_cli();
+        
     // mailbox has room for new message
     msg = &tomail->box[tomail->head];
     msg->length = length;
@@ -41,6 +51,8 @@ void message_send(mailbox * tomail, pid fromPid, unsigned char * content, unsign
     
     tomail->head = next;
     
+    context->mail.outMail = 0;
+    
     port_sei();
 }
 
@@ -50,10 +62,11 @@ ipcMessage * message_receive(mailbox * mail) {
     
     port_cli();
 
-    while (mail->head == mail->tail) {
+    if (is_empty(mail)) {
         // empty mailbox. Block the process will some message is present
-        kernel_yield();
+        kernel_wait((pCtrlBlock *)context, MsgReceive);
     }
+    port_cli();
     
     // mailbox has message
     msg = &mail->box[mail->tail];

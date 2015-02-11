@@ -7,6 +7,7 @@
 //
 
 #include "process.h"
+#include "ipc.h"
 
 void process_run_state_machine(pCtrlBlock * process) {
     process->elapsedTicks++;
@@ -22,7 +23,26 @@ void process_run_state_machine(pCtrlBlock * process) {
             
             break;
             
-        case Ready:
+        case Waiting:
+            
+            switch (process->waitFor) {
+                case MsgSend:
+                    if (is_full(process->mail.outMail) == 0) {
+                        process_change_status(process, Ready);
+                    }
+                    break;
+                    
+                case MsgReceive:
+                    if (is_empty(&process->mail) == 0) {
+                        process_change_status(process, Ready);
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            break;
             
         default:
             break;

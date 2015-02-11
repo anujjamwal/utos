@@ -13,7 +13,7 @@ void process1(void) {
         
         kernel_send(p2, (unsigned char *)m, 1);
         m[0] ++;
-        kernel_yield();
+        kernel_sleep(2);
     }
 }
 void process2(void) {
@@ -33,7 +33,7 @@ void setup(void) {
     kernel_init();
     
     p1 = kernel_spawn(process1, Med);
-    p2 = kernel_spawn(process2, Med);
+    p2 = kernel_spawn(process2, High);
     
     kernel_start();
 }
