@@ -9,7 +9,7 @@
 #ifndef utos_kerndefs_h
 #define utos_kerndefs_h
 
-typedef enum {Running, Waiting, Ready, Blocked} pStatus;
+typedef enum {Running, Waiting, Ready, Blocked, Sleeping} pStatus;
 
 typedef unsigned char pStack;
 typedef unsigned char pid;

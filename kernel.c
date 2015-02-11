@@ -22,21 +22,21 @@ pCtrlBlock * _kernel_process_with_max_priority(pCtrlBlock * process, pCtrlBlock 
 
 
 void kernel_init(void) {
-    kernel_spawn(_kernel_housekeeping, 0);
+    kernel_spawn(_kernel_housekeeping);
 }
 
 void kernel_start(void) {
     port_start_timer();
 }
 
-pid kernel_spawn(pCode code, unsigned int time) {
+pid kernel_spawn(pCode code) {
     port_cli();
     
     pCtrlBlock * pcb = &processes[pInd++];
     
     pcb->pid = pInd - 1;
     pcb->code = code;
-    pcb->waitTicks = time % SYSTEM_TICK > 0 ? time / SYSTEM_TICK + 1 : time / SYSTEM_TICK;
+    // pcb->waitTicks = time % SYSTEM_TICK > 0 ? time / SYSTEM_TICK + 1 : time / SYSTEM_TICK;
     pcb->elapsedTicks = 0;
     pcb->status = Waiting;
     
@@ -55,7 +55,13 @@ void kernel_run_scheduler(void) {
     for(i = 1; i < PROCESS_COUNT+1; i++) {
         tmp = &processes[i];
         
-        if (tmp->status == Running) {
+        if (tmp->status == Sleeping) {
+            tmp->waitTicks--;
+            
+            if (tmp->waitTicks == 0) {
+                tmp->status = Waiting;
+            }
+        } else if (tmp->status == Running) {
             tmp->status = Waiting;
             tmp->elapsedTicks = 0;
         } else if(tmp->status == Waiting) {
@@ -83,6 +89,12 @@ void kernel_send(pid process, unsigned char * message, unsigned char length) {
 
 ipcMessage * kernel_receive(void) {
     return message_receive((mailbox *)&context->mail);
+}
+
+void kernel_sleep(unsigned int time) {
+    context->status = Sleeping;
+    context->waitTicks = time / SYSTEM_TICK;
+    kernel_yield();
 }
                                                
 void _kernel_housekeeping(void) {

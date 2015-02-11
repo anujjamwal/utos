@@ -32,8 +32,8 @@ void process2(void) {
 void setup(void) {
     kernel_init();
     
-    p1 = kernel_spawn(process1, 1);
-    p2 = kernel_spawn(process2, 1);
+    p1 = kernel_spawn(process1);
+    p2 = kernel_spawn(process2);
     
     kernel_start();
 }

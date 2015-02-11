@@ -47,11 +47,10 @@ void kernel_start(void);
  *
  * Arguments:
  *   code: process function to be executed
- *   time: the waiting time for the process in waiting
  * Return Type:
  *   pid : returns the pid of the process
  */
-pid kernel_spawn(pCode code, unsigned int time);
+pid kernel_spawn(pCode code);
 
 
 /*
@@ -112,6 +111,19 @@ void kernel_send(pid toProcess, unsigned char * message, unsigned char length);
   *   ipcMessage: the received message. see kerndefs.h
  */
 ipcMessage * kernel_receive(void);
+
+
+/*
+ * kernel_sleep(unsigned int time)
+ *
+ * Puts a process on sleep for atleast the given time
+ *
+ * Arguments:
+ *   time   : The number of milliseconds to yield the processor
+ * Return Type:
+ *   None
+ */
+void kernel_sleep(unsigned int time);
 
 #endif
 

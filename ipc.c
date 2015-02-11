@@ -22,15 +22,16 @@ void message_send(mailbox * tomail, pid fromPid, unsigned char * content, unsign
     ipcMessage * msg;
     unsigned char next = (unsigned char)((tomail->head + 1) % MAILBOX_SIZE);
 
+    port_cli();
+
     while(next == tomail->tail) {
         // mailbox is full. Block the process till mailbox has some space
         kernel_yield();
     }
     
-    port_cli();
     
     // mailbox has room for new message
-    msg = &tomail->box[tomail->tail];
+    msg = &tomail->box[tomail->head];
     msg->length = length;
     msg->senderPid = fromPid;
     
@@ -47,13 +48,13 @@ ipcMessage * message_receive(mailbox * mail) {
     ipcMessage * msg;
     unsigned char length;
     
+    port_cli();
+
     while (mail->head == mail->tail) {
         // empty mailbox. Block the process will some message is present
         kernel_yield();
     }
     
-    port_cli();
-
     // mailbox has message
     msg = &mail->box[mail->tail];
     length = mail->curr.length = msg->length;
