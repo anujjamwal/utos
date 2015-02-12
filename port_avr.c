@@ -99,23 +99,14 @@
     );
 
 extern volatile pCtrlBlock * volatile context;
+extern volatile pCtrlBlock * volatile nextProcess;
+extern volatile pCtrlBlock scheduler;
 
-void port_kernel_tick(void) __attribute__ ((naked));
-void port_kernel_tick(void) {
+void port_switch_context(void) __attribute__ ((naked));
+void port_switch_context(void) {
     SAVE_CONTEXT();
     
-    kernel_run_scheduler();
-    
-    RESTORE_CONTEXT();
-    
-    asm volatile ( "ret" );
-}
-
-void kernel_yield(void) __attribute__((naked));
-void kernel_yield(void) {
-    SAVE_CONTEXT();
-    
-    kernel_run_scheduler();
+    context = nextProcess;
     
     RESTORE_CONTEXT();
     sei();
@@ -126,8 +117,9 @@ void kernel_yield(void) {
 ISR(TIMER1_COMPA_vect, ISR_NAKED)
 {
     cli();
-    port_kernel_tick();
-    sei();
+    
+    nextProcess = &scheduler;
+    port_switch_context();
     asm volatile ( "reti" );
 }
 
@@ -192,11 +184,13 @@ void port_init_context(pCtrlBlock * pcb) {
     stackbase[--stacksize] = (pStack) 31; /* R31 */
     pcb->topOfStack = &stackbase[--stacksize];
 }
+
 void port_sei(void) __attribute__((naked));
 void port_sei(void) {
     sei();
     asm volatile ( "ret" );
 }
+
 void port_cli(void) __attribute__((naked));
 void port_cli(void) {
     cli();

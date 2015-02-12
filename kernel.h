@@ -16,7 +16,7 @@
 /*
  * kernel_init(void)
  *
- * initializes the kernel.
+ * initializes the kernel. Creates the Os Specific processes.
  *
  * Arguments:
  *   None
@@ -53,36 +53,6 @@ void kernel_start(void);
  */
 pid kernel_spawn(pCode code, pPriority priority);
 
-
-/*
- * kernel_run_scheduler(void)
- *
- * executes the scheduling code.
- * The method should not be executed from user code
- *
- * Arguments:
- *   None
- * Return Type:
- *   None
- */
-void kernel_run_scheduler(void);
-
-
-/*
- * kernel_yield(void)
- * 
- * yields the processor and invokes the schedular to run another process
- * The method blocks the process
- *
- * Arguments:
- *   None
- * Return Type:
- *   None
- */
-void kernel_yield(void);
-
-
-#ifdef USE_MAILBOX
 
 /*
   * kernel_send(pid process, unsigned char * message, unsigned char length)
@@ -126,9 +96,18 @@ ipcMessage * kernel_receive(void);
  */
 void kernel_sleep(unsigned int time);
 
-void kernel_wait(pCtrlBlock * process, pWait reason);
-
-
-#endif
+/*
+ * kernel_wait(pWait reason)
+ *
+ * Blocks the current process for some reason.
+ * The process state is set to Waiting. In this state the scheduler checks for reason specific conditions to be met.
+ * Once ready the scheduler marks the process as Ready and is run later by scheduler.
+ *
+ * Arguments:
+ *   reason   : The reason must be one of the pWait reasons
+ * Return Type:
+ *   None
+ */
+void kernel_wait(pWait reason);
 
 #endif /* defined(__utos__kernel__) */

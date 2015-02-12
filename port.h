@@ -13,10 +13,10 @@
 
 // functions to be ported by individual platform code
 void port_setup_timer(void);
-void port_kernel_tick(void);
 void port_start_timer(void);
 void port_init_context(pCtrlBlock * pcb);
 void port_sei(void);
 void port_cli(void);
+void port_switch_context(void);
 
 #endif
