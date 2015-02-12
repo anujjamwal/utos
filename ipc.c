@@ -34,7 +34,7 @@ void message_send(mailbox * tomail, pid fromPid, unsigned char * content, unsign
     port_cli();
     context->mail.outMail = tomail;
     
-    if (is_full(tomail)) {
+    while (is_full(tomail)) {
         // mailbox is full. Block the process till mailbox has some space
         kernel_wait((pCtrlBlock *)context, MsgSend);
     }
@@ -62,7 +62,7 @@ ipcMessage * message_receive(mailbox * mail) {
     
     port_cli();
 
-    if (is_empty(mail)) {
+    while (is_empty(mail)) {
         // empty mailbox. Block the process will some message is present
         kernel_wait((pCtrlBlock *)context, MsgReceive);
     }

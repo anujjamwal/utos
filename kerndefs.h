@@ -11,9 +11,9 @@
 
 #include "kconfig.h"
 
-typedef enum {Running, Waiting, Ready, Blocked, Sleeping} pStatus;
+typedef enum {Running, Waiting, Ready, Sleeping} pStatus;
 typedef enum {VLow, Low, Med, High, VHigh} pPriority;
-typedef enum {MsgReceive, MsgSend} pWait;
+typedef enum {MsgSend, MsgReceive} pWait;
 
 typedef unsigned char pStack;
 typedef unsigned char pid;

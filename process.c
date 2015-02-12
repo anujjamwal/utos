@@ -17,34 +17,31 @@ void process_run_state_machine(pCtrlBlock * process) {
             process_change_status(process, Ready);
             break;
             
-        case Sleeping:
-            if(process->waitTicks <= process->elapsedTicks)
-                process_change_status(process, Ready);
-            
-            break;
-            
         case Waiting:
             
             switch (process->waitFor) {
                 case MsgSend:
-                    if (is_full(process->mail.outMail) == 0) {
+                    if (!is_full(process->mail.outMail)) {
                         process_change_status(process, Ready);
                     }
                     break;
                     
                 case MsgReceive:
-                    if (is_empty(&process->mail) == 0) {
+                    if (!is_empty(&process->mail)) {
                         process_change_status(process, Ready);
                     }
-                    break;
-                    
-                default:
                     break;
             }
             
             break;
+        
+        case Ready:
+            break;
             
-        default:
+        case Sleeping:
+            if(process->waitTicks <= process->elapsedTicks)
+                process_change_status(process, Ready);
+            
             break;
     }
 }
