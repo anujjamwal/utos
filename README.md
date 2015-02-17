@@ -19,13 +19,13 @@ Define the process count in kconfig.h as PROCESS_COUNT
 void process1(void) {
     while(1) {
         PORTB = 0xff;
-        kernel_sleep(1);
+        Sleep(1);
     }
 }
 void process2(void) {
     while(1) {
         PORTB = 0x00;
-        kernel_yield(1);
+        Sleep(1);
     }
 
 }
@@ -60,20 +60,22 @@ void process1(void) {
   PORTC = 0x00;
 
   while(1) {
-    kernel_send(p2, (unsigned char *)m, 1);
+    Send(p2, m, 1);
     m[0] ++;
-    kernel_sleep(3);
+    Sleep(3);
   }
 }
 
 void process2(void) {
-  ipcMessage * msg;
-  
   PORTB = 0x00;
 	                
   while(1) {
-    msg = kernel_receive();
-    PORTB = msg->content[0];
+    Receive({
+        // msg of type ipcMessage* is available here
+        PORTB = msg->content[0];
+    }, 1000, {
+    	// executed on timeout
+    });
   }
 }
 
