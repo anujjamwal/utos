@@ -12,7 +12,6 @@
 #include "kernel.h"
 
 // functions to be ported by individual platform code
-void port_setup_timer(void);
 void port_start_timer(void);
 void port_init_context(pCtrlBlock * pcb);
 void port_sei(void);

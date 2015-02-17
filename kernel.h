@@ -96,6 +96,7 @@ ipcMessage * kernel_receive(void);
  */
 void kernel_sleep(unsigned int time);
 
+
 /*
  * kernel_wait(pWait reason)
  *

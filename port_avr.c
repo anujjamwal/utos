@@ -185,14 +185,12 @@ void port_init_context(pCtrlBlock * pcb) {
     pcb->topOfStack = &stackbase[--stacksize];
 }
 
-void port_sei(void) __attribute__((naked));
+inline void port_sei(void) __attribute__((always_inline));
 void port_sei(void) {
     sei();
-    asm volatile ( "ret" );
 }
 
-void port_cli(void) __attribute__((naked));
+inline void port_cli(void) __attribute__((always_inline));
 void port_cli(void) {
     cli();
-    asm volatile ( "ret" );
 }
