@@ -11,7 +11,7 @@
 #include "port.h"
 #include "ipc.h"
 #include "process.h"
-#include "scheduling.h"
+#include "schedul.h"
 
 
 pCtrlBlock processes[PROCESS_COUNT+1];
@@ -88,11 +88,9 @@ ipcMessage * kernel_receive(void) {
 }
 
 void kernel_sleep(unsigned int time) {
-    context->status = Sleeping;
     context->waitTicks = time / SYSTEM_TICK;
-    kernel_yield();
+    kernel_wait(Sleeping);
 }
-
 
 void kernel_wait(pWait reason) {
     context->waitFor = reason;

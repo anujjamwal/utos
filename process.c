@@ -10,15 +10,14 @@
 #include "ipc.h"
 
 void process_run_state_machine(pCtrlBlock * process) {
+    // Increment the elapsed time of the process in the given state
     process->elapsedTicks++;
     
     switch (process->status) {
         case Running:
-            process_change_status(process, Ready);
             break;
             
         case Waiting:
-            
             switch (process->waitFor) {
                 case MsgSend:
                     if (!is_full(process->mail.outMail)) {
@@ -31,18 +30,18 @@ void process_run_state_machine(pCtrlBlock * process) {
                         process_change_status(process, Ready);
                     }
                     break;
+                    
+                case Sleeping:
+                    if(process->waitTicks <= process->elapsedTicks) {
+                        process_change_status(process, Ready);
+                    }
+                    break;
             }
-            
             break;
         
         case Ready:
             break;
             
-        case Sleeping:
-            if(process->waitTicks <= process->elapsedTicks)
-                process_change_status(process, Ready);
-            
-            break;
     }
 }
 
@@ -50,7 +49,7 @@ void process_change_status(pCtrlBlock * process, pStatus status) {
     if (process->status != status) {
         process->elapsedTicks = 0;
         
-        if (process->status == Sleeping) {
+        if (process->status == Waiting) {
             process->waitTicks = 0;
         }
     }

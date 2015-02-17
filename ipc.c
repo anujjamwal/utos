@@ -12,6 +12,7 @@
 
 extern volatile pCtrlBlock * volatile context;
 
+inline void mailbox_init(mailbox * mail) __attribute__((always_inline));
 void mailbox_init(mailbox * mail) {
     mail->head = 0;
     mail->tail = 0;
