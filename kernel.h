@@ -13,6 +13,11 @@
 #include "kerndefs.h"
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /*
  * kernel_init(void)
  *
@@ -110,5 +115,9 @@ void kernel_sleep(unsigned int time);
  *   None
  */
 void kernel_wait(pWait reason);
+    
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* defined(__utos__kernel__) */

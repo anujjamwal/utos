@@ -11,6 +11,11 @@
 
 #include "kconfig.h"
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {Running, Waiting, Ready} pStatus;
 typedef enum {VLow, Low, Med, High, VHigh} pPriority;
 typedef enum {MsgSend, MsgReceive, Sleeping} pWait;
@@ -19,8 +24,6 @@ typedef unsigned char pStack;
 typedef unsigned char pid;
 
 typedef void (*pCode) (void);
-
-#ifdef USE_MAILBOX
 
 typedef struct {
     unsigned char length;
@@ -35,7 +38,6 @@ typedef struct mailbox_ {
     volatile unsigned char tail;
     struct mailbox_ * outMail;
 } mailbox;
-#endif
 
 
 typedef struct {
@@ -51,9 +53,15 @@ typedef struct {
     volatile pStatus status;
     volatile unsigned int elapsedTicks;
     
-#ifdef USE_MAILBOX
     mailbox mail;
-#endif
     
 } pCtrlBlock;
+    
+    
+#ifdef __cplusplus
+}
 #endif
+
+
+#endif
+

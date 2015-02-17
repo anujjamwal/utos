@@ -11,6 +11,18 @@
 
 #include "kerndefs.h"
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 pCtrlBlock * scheduler_next_process(pCtrlBlock * processes, unsigned char pCount);
 
+    
+#ifdef __cplusplus
+}
+#endif
+
+    
 #endif /* defined(__utos__scheduling__) */
