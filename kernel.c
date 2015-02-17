@@ -83,8 +83,16 @@ void kernel_send(pid process, unsigned char * message, unsigned char length) {
     message_send(mail, context->pid, message, length);
 }
 
-ipcMessage * kernel_receive(void) {
-    return message_receive((mailbox *)&context->mail);
+ipcMessage * kernel_receive(unsigned int wait, unsigned char* timeout) {
+    ipcMessage * msg;
+    context->waitTicks = wait / SYSTEM_TICK;
+    msg = message_receive((mailbox *)&context->mail);
+    
+    if(msg == 0) *timeout = 1;
+    
+    context->waitTicks = 0;
+    
+    return msg;
 }
 
 void kernel_sleep(unsigned int time) {

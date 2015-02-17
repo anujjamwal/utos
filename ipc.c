@@ -65,6 +65,8 @@ ipcMessage * message_receive(mailbox * mail) {
     while (is_empty(mail)) {
         // empty mailbox. Block the process will some message is present
         kernel_wait(MsgReceive);
+        
+        if(context->status == TimeoutReady) return 0;
     }
     port_cli();
     

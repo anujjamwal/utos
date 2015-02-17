@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-typedef enum {Running, Waiting, Ready} pStatus;
+typedef enum {Running, Waiting, Ready, TimeoutReady} pStatus;
 typedef enum {VLow, Low, Med, High, VHigh} pPriority;
 typedef enum {MsgSend, MsgReceive, Sleeping} pWait;
 

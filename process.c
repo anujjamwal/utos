@@ -28,6 +28,8 @@ void process_run_state_machine(pCtrlBlock * process) {
                 case MsgReceive:
                     if (!is_empty(&process->mail)) {
                         process_change_status(process, Ready);
+                    } else if(process->waitTicks <= process->elapsedTicks) {
+                        process_change_status(process, TimeoutReady);
                     }
                     break;
                     
@@ -40,6 +42,9 @@ void process_run_state_machine(pCtrlBlock * process) {
             break;
         
         case Ready:
+            break;
+            
+        case TimeoutReady:
             break;
             
     }

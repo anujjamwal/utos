@@ -29,7 +29,7 @@ pCtrlBlock * scheduler_next_process(pCtrlBlock * processes, unsigned char pCount
     for(i = 0; i < pCount; i++) {
         t = &processes[i];
         
-        if (t->status == Ready || t->status == Running) {
+        if (t->status == Ready || t->status == TimeoutReady || t->status == Running) {
             if (p == 0) {
                 p = t;
             } else if(p->priority < t->priority) {

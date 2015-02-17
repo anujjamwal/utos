@@ -2,7 +2,7 @@
 
 #include "kernel.h"
 
-pid p1, p2;
+pid p1, p2, p3;
 
 void process1(void) {
     char * m = "0";
@@ -11,22 +11,22 @@ void process1(void) {
     
     while(1) {
         
-        kernel_send(p2, (unsigned char *)m, 1);
+        Send(p2, m, 1);
         m[0] ++;
-        kernel_sleep(2);
+        Sleep(2);
     }
 }
+
 void process2(void) {
-    ipcMessage * msg;
-    
     PORTB = 0x00;
     
     while(1) {
-        msg = kernel_receive();
-        
-        PORTB = msg->content[0];
+        Receive({
+            PORTB = msg->content[0];
+        }, 100, {
+            PORTC ^= 0x11;
+        });
     }
-
 }
 
 void setup(void) {

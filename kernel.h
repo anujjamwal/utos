@@ -17,6 +17,18 @@
 extern "C" {
 #endif
 
+    
+#define Sleep(time) kernel_sleep(time)
+
+#define Send(process, message, length) kernel_send(process, (unsigned char *)message, length)
+
+#define Receive(block1, waitTime, block2) \
+    unsigned char timeout = 0; \
+    ipcMessage * msg = kernel_receive(waitTime, &timeout); \
+    if(timeout == 0) \
+        block1 \
+    else \
+        block2
 
 /*
  * kernel_init(void)
@@ -75,18 +87,18 @@ pid kernel_spawn(pCode code, pPriority priority);
 void kernel_send(pid toProcess, unsigned char * message, unsigned char length);
 
 
- /*
-  * kernel_receive()
-  *
-  * Read message from the mailbox.
-  * The method block the process if the mailbox empty.
-  *
-  * Arguments:
-  *   None
-  * Return Type:
-  *   ipcMessage: the received message. see kerndefs.h
+/*
+ * kernel_receive(unsigned int wait, unsigned char* timeout)
+ *
+ * Read message from the mailbox.
+ * The method block the process if the mailbox empty. The block timesout after the wait time and timeout flag is set
+ *
+ * Arguments:
+ *   None
+ * Return Type:
+ *   ipcMessage: the received message. see kerndefs.h
  */
-ipcMessage * kernel_receive(void);
+ipcMessage * kernel_receive(unsigned int wait, unsigned char* timeout);
 
 
 /*
